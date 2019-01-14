@@ -1,0 +1,16 @@
+body{
+    text-align: center;
+}
+
+.messages{
+    width: 500px;
+    height: 175px;
+    border-width: 5px;
+    border-style: inset;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+.leaveButton{
+    margin-top: 20px;
+}
