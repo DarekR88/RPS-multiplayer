@@ -9,8 +9,10 @@ body{
     border-style: inset;
     margin: auto;
     margin-bottom: 20px;
+    overflow: auto;
 }
 
 .leaveButton{
     margin-top: 20px;
 }
+
