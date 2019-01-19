@@ -11,38 +11,63 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 
-// on page load the player areas and message input will be hidden 
-$(document).ready(function () {
-    $("#playerAreaOne").hide();
-    $("#playerAreaTwo").hide();
-    $("#messageAreaOne").hide();
-    $("#messageAreaTwo").hide();
+// create a variable for branch database of players 
+var player1 = database.ref("/player1")
+var player2 = database.ref("/player2")
+
+// database for the chatroom
+var chatBase = database.ref("/chatroom")
+
+// databases for the rps choices 
+var rpsChoice = database.ref("/choices")
+
+
+// database branch for connections and connection info
+var connectionsRef = database.ref("/connections");
+var connectedRef = database.ref(".info/connected");
+
+// add and remove users based on connection
+connectedRef.on("value", function (snap) {
+    if (snap.val()) {
+        var con = connectionsRef.push(true);
+        con.onDisconnect().remove();
+    }
 });
 
-// variable that will hold the number of players 
-var players = 0;
+// username variable
+var userName;
 
-// reference database on value change and get a snapshot and concole log snap shot  
-database.ref().on("value", function (snapshot) {
-    console.log(snapshot.val());
-    // set the number of players in the playerCount to a variable
-    players = snapshot.val().playerCount;
-}, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
+// on ready show the sn submit area
+$(document).ready(function () {
+    $("#namePick").show();
 })
 
-// on click function that will add players to the game 
+// on submit of namesubmit capture the username in a variable 
 $("#nameSubmit").on("click", function (event) {
     event.preventDefault();
-
-    players++;
-    // create and update playercount in database
-    database.ref().set({
-        playerCount: players
+    userName = $("#screenName").val().trim();
+    localStorage.setItem("name", userName);
+    player1.on("value", function (snapshot) {
+        if (snapshot.child("firstPlayer").exists()) {
+            player2.set({
+                "secondPlayer": userName
+            })
+            $("#namePick").hide();
+        } else {
+            player1.set({
+                "firstPlayer": userName
+            });
+        };
     });
-
 });
 
+player1.child("firstPlayer").on("value", function (snapshot) {
+    $("#playerOne").text(snapshot.val());
+});
+
+player2.child("secondPlayer").on("value", function (snapshot) {
+    $("#playerTwo").text(snapshot.val());
+});
 
 var a;
 var b;
@@ -51,17 +76,97 @@ var b;
 $("#playerOneChoice").click(function (event) {
     event.preventDefault();
     a = $("#choiceOne").val();
-    console.log(a);
     $("#choicesOne").hide();
     $("#battleChoiceOne").text(a);
+    rpsChoice.push({
+        "choice1": a
+    })
+
 });
 
 // capture the choice of player two on submit click
 $("#playerTwoChoice").click(function (event) {
     event.preventDefault();
     b = $("#choiceTwo").val();
-    console.log(b);
     $("#choicesTwo").hide();
     $("#battleChoiceTwo").text(b);
+    rpsChoice.push({
+        "choice2": b
+    })
 });
+
+// snapshot the rpsChoice database branch if both choices have been made run a switch case function to get the results 
+rpsChoice.on("value", function (snapshot) {
+    if (snapshot.child("choice1").exists() && snapshot.child("choice2").exists()) {
+
+        var playerOneChoice = snapshot.val().choice1;
+        var playerTwoChoice = snapshot.val().choice2;
+        switch (playerOneChoice + playerTwoChoice) {
+            case "rockrock":
+                $("#results").text("Tie Game")
+                $("#resultsImage").html("<img src='assets/images/rocktie.jpg'>")
+                break;
+            case "rockscissors":
+                $("#results").text("Player One Wins!")
+                $("#resultsImage").html("<img src'assets/images/rockwin.jpg'>")
+                break;
+            case "rockpaper":
+                $("#results").text("Player Two Wins")
+                $("#resultsImage").html("<img src'assets/images/paperwin.jpg'>")
+                break;
+            case "paperpaper":
+                $("#results").text("Tie Game")
+                $("#resultsImage").html("<img src'assets/images/papertie.jpg'>")
+                break;
+            case "paperscissors":
+                $("#results").text("Player Two Wins!")
+                $("#resultsImage").html("<img src'assets/images/scissorswin.jpg'>")
+                break;
+            case "paperrock":
+                $("#results").text("Player One Wins!")
+                $("#resultsImage").html("<img src'assets/images/paperwin.jpg'>")
+                break;
+            case "scissorsscissors":
+                $("#results").text("Tie Game")
+                $("#resultsImage").html("<img src'assets/images/scissorstie.jpg'>")
+                break;
+            case "scissorspaper":
+                $("#results").text("Player One Wins")
+                $("#resultsImage").html("<img src'assets/images/scissorswin.jpg'>")
+                break;
+            case "scissorsrock":
+                $("#results").text("Player Two Wins")
+                $("#resultsImage").html("<img src'assets/images/rockwin.jpg'>")
+                break;
+            default:
+                $("#results").text("")
+                $("#resultsImage").html("")
+        }
+
+
+    }
+
+});
+
+// message submit pushes message and locally stored username to the chatroom database
+$("#messageSubmit").on("click", function () {
+    var screenName = localStorage.getItem("name");
+    var message = $("#message").val().trim();
+    chatBase.push({
+        "name": screenName,
+        "message": message
+    });
+    $("#message").val('');
+})
+
+// when things are added to the chatroom database the username and message are appended to the html
+chatBase.on("child_added", function (snapshot) {
+    var name = snapshot.val().name
+    var message = snapshot.val().message
+    $("#messages").append(name + ": " + message + "<br>")
+})
+
+
+
+
 

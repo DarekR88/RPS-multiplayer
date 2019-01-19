@@ -15,60 +15,63 @@
     <div class="container" div>
         <div class="row">
             <h1>Rock Paper Scissors!</h1>
-            <form>
+            <form id="namePick">
                 Choose a screen name:
                 <input type="text" id="screenName">
                 <input type="submit" id="nameSubmit" value="Submit">
             </form>
         </div>
         <div class="row">
-            <div class="col-md-4" id="playerAreaOne">
+            <div class="col-md-4">
                 <h2 id="playerOne"></h2>
-                <form id="choicesOne">
-                    <select name="choice" id="choiceOne">
-                        <option value="rock">rock</option>
-                        <option value="paper">paper</option>
-                        <option value="scissors">scissors</option>
-                    </select>
-                    <input type="submit" id="playerOneChoice" value="Submit">
-                </form>
-                <h2 id="battleChoiceOne"></h2>
+                <div id="playerAreaOne">
+                    <form id="choicesOne">
+                        <select name="choice" id="choiceOne">
+                            <option value="rock">rock</option>
+                            <option value="paper">paper</option>
+                            <option value="scissors">scissors</option>
+                        </select>
+                        <input type="submit" id="playerOneChoice" value="Submit">
+                    </form>
+                    <h2 id="battleChoiceOne"></h2>
+                </div>
+                <p>wins:<p id="wins"></p></p>
+                <p>losses:<p id="losses"></p></p>
                 <!-- <button type="button" class="leaveButton" id="leaveOne">Leave Game</button> -->
             </div>
             <div class="col-md-4" id="resultsArea">
                 <div id="results"></div>
                 <div id="resultsImage"></div>
             </div>
-            <div class="col-md-4" id="playerAreaTwo">
+            <div class="col-md-4">
                 <h2 id="playerTwo"></h2>
-                <form id="choicesTwo">
-                    <select name="choice" id="choiceTwo">
-                        <option value="rock">rock</option>
-                        <option value="paper">paper</option>
-                        <option value="scissors">scissors</option>
-                    </select>
-                    <input type="submit" id="playerTwoChoice" value="Submit">
-                </form>
-                <h2 id="battleChoiceTwo"></h2>
+                <div id="playerAreaTwo">
+                    <form id="choicesTwo">
+                        <select name="choice" id="choiceTwo">
+                            <option value="rock">rock</option>
+                            <option value="paper">paper</option>
+                            <option value="scissors">scissors</option>
+                        </select>
+                        <input type="submit" id="playerTwoChoice" value="Submit">
+                    </form>
+                    <h2 id="battleChoiceTwo"></h2>
+                </div>
+                <p>wins:<p id="winsTwo"></p></p>
+                <p>losses:<p id="lossesTwo"></p></p>
                 <!-- <button type="button" class="leaveButton" id="leaveTwo">Leave Game</button> -->
             </div>
         </div>
         <div class="row">
             <div>
                 <h3>Messages</h3>
-                <div class="messages"></div>
+                <div id="messages"></div>
             </div>
         </div>
         <div class="row">
-            <form id="messageAreaOne">
+            <form id="messageArea">
                 RPS messenger:
-                <input type="text" id="messageOne" size="50">
-                <input type="submit" id="messageSubmitOne" value="Submit">
-            </form>
-            <form id="messageAreaTwo">
-                RPS messenger:
-                <input type="text" id="messageTwo" size="50">
-                <input type="submit" id="messageSubmitTwo" value="Submit">
+                <input type="text" id="message" size="50">
+                <input type="submit" id="messageSubmit" value="Submit">
             </form>
         </div>
     </div>
