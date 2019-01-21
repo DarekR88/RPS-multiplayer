@@ -44,7 +44,7 @@ $(document).ready(function () {
     $("#choicesTwo").hide();
     $("#leaveOne").hide();
     $("#leaveTwo").hide();
-})
+});
 
 // username variable
 var userName;
@@ -60,7 +60,7 @@ $("#nameSubmitOne").on("click", function (event) {
     $("#namePickTwo").hide();
     $("#choicesOne").show();
     $("#leaveOne").show();
-
+    $("#screenNameOne").val('');
 });
 $("#nameSubmitTwo").on("click", function (event) {
     event.preventDefault();
@@ -72,7 +72,8 @@ $("#nameSubmitTwo").on("click", function (event) {
     $("#namePickOne").hide();
     $("#choicesTwo").show();
     $("#leaveTwo").show();
-})
+    $("#screenNameTwo").val('');
+});
 
 player1.on("value", function (snapshot) {
     if (snapshot.child("firstPlayer").exists()) {
