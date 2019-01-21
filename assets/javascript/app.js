@@ -19,6 +19,10 @@ var playerTwoResults = database.ref("/player2wl");
 var player1 = database.ref("/player1");
 var player2 = database.ref("/player2");
 
+// databases for storing the player's choices at first 
+var player1choice = database.ref("/firstPlayerChoice");
+var player2choice = database.ref("/secondPlayerChoice");
+
 // database for the chatroom
 var chatBase = database.ref("/chatroom");
 
@@ -34,6 +38,14 @@ var playerOneLosses = 0;
 var playerTwoWins = 0;
 var playerTwoLosses = 0;
 
+// on ready function for hiding the player choice areas 
+$(document).ready(function () {
+    $("#choicesOne").hide();
+    $("#choicesTwo").hide();
+    $("#leaveOne").hide();
+    $("#leaveTwo").hide();
+})
+
 // username variable
 var userName;
 
@@ -46,6 +58,8 @@ $("#nameSubmitOne").on("click", function (event) {
     });
     $("#namePickOne").hide();
     $("#namePickTwo").hide();
+    $("#choicesOne").show();
+    $("#leaveOne").show();
 
 });
 $("#nameSubmitTwo").on("click", function (event) {
@@ -56,16 +70,24 @@ $("#nameSubmitTwo").on("click", function (event) {
     });
     $("#namePickTwo").hide();
     $("#namePickOne").hide();
+    $("#choicesTwo").show();
+    $("#leaveTwo").show();
 })
 
-player1.child("firstPlayer").on("value", function (snapshot) {
-    $("#playerOne").text(snapshot.val());
+player1.on("value", function (snapshot) {
+    if (snapshot.child("firstPlayer").exists()) {
+        $("#namePickOne").hide();
+        $("#playerOne").text(snapshot.val().firstPlayer);
+    }
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
-player2.child("secondPlayer").on("value", function (snapshot) {
-    $("#playerTwo").text(snapshot.val());
+player2.on("value", function (snapshot) {
+    if (snapshot.child("secondPlayer").exists()) {
+        $("#namePickTwo").hide();
+        $("#playerTwo").text(snapshot.val().secondPlayer);
+    }
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
@@ -82,7 +104,9 @@ $("#playerOneChoice").click(function (event) {
     event.preventDefault();
     picks++;
     a = $("#choiceOne").val();
-    $("#choicesOne").hide();
+    player1choice.set({
+        "choice": a
+    });
     $("#battleChoiceOne").text(a);
 
     throwPick.set({
@@ -90,12 +114,15 @@ $("#playerOneChoice").click(function (event) {
     });
 });
 
+
 // capture the choice of player two on submit click
 $("#playerTwoChoice").click(function (event) {
     event.preventDefault();
     picks++;
     b = $("#choiceTwo").val();
-    $("#choicesTwo").hide();
+    player2choice.set({
+        "choice": b
+    })
     $("#battleChoiceTwo").text(b);
     throwPick.set({
         "throws": picks
@@ -103,16 +130,34 @@ $("#playerTwoChoice").click(function (event) {
 
 });
 
+// set variables to the choices in the player choices databases
+var choiceA;
+var choiceB;
+
+player1choice.on("value", function (snapshot) {
+    if (snapshot.child("choice").exists()) {
+        choiceA = snapshot.val().choice;
+    }
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+player2choice.on("value", function (snapshot) {
+    if (snapshot.child("choice").exists()) {
+        choiceB = snapshot.val().choice;
+    }
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
 var pickNum;
 // access the throwPick database 
 throwPick.child("throws").on("value", function (snapshot) {
-    pickNum = parseInt(snapshot.val())
-    console.log(pickNum)
+    pickNum = parseInt(snapshot.val());
     // if statement that will set the players choices to the rpsChoice database
     if (pickNum === 2) {
         rpsChoice.set({
-            "choice1": a,
-            "choice2": b
+            "choice1": choiceA,
+            "choice2": choiceB
         });
     };
 }, function (errorObject) {
@@ -125,6 +170,7 @@ rpsChoice.on("value", function (snapshot) {
     if (snapshot.child("choice1").exists() && snapshot.child("choice2").exists()) {
         var playerOneChoice = snapshot.val().choice1;
         var playerTwoChoice = snapshot.val().choice2;
+        console.log(playerOneChoice + playerTwoChoice);
 
         switch (playerOneChoice + playerTwoChoice) {
             case "rockrock":
@@ -169,7 +215,7 @@ rpsChoice.on("value", function (snapshot) {
             case "scissorspaper":
                 $("#results").text("Player One Wins");
                 $("#resultsImage").html("<img src='assets/images/scissorwin.jpg'>");
-                playerOneWin();
+                playerOnewin();
                 resetGame();
                 break;
             case "scissorsrock":
@@ -181,16 +227,17 @@ rpsChoice.on("value", function (snapshot) {
             default:
                 $("#results").text("")
                 $("#resultsImage").html("")
-        }
+        };
 
 
-    }
+    };
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
 // message submit pushes message and locally stored username to the chatroom database
-$("#messageSubmit").on("click", function () {
+$("#messageSubmit").on("click", function (event) {
+    event.preventDefault();
     var message = $("#message").val().trim();
     chatBase.push({
         "name": userName,
@@ -236,25 +283,31 @@ function playerTwowin() {
 
 // update variables based on the values stored in firebase when the values change
 throwPick.on("value", function (snapshot) {
-    picks = snapshot.val().throws;
+    if (snapshot.child("throws").exists()) {
+        picks = snapshot.val().throws;
+    }
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
 playerOneResults.on("value", function (snapshot) {
-    playerOneWins = snapshot.val().wins;
-    playerOneLosses = snapshot.val().losses;
-    $("#wins").text(playerOneWins);
-    $("#losses").text(playerOneLosses);
+    if (snapshot.child("wins").exists() && snapshot.child("losses").exists()) {
+        playerOneWins = snapshot.val().wins;
+        playerOneLosses = snapshot.val().losses;
+        $("#wins").text(playerOneWins);
+        $("#losses").text(playerOneLosses);
+    }
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
 playerTwoResults.on("value", function (snapshot) {
-    playerTwoWins = snapshot.val().wins;
-    playerTwoLosses = snapshot.val().losses;
-    $("#winsTwo").text(playerTwoWins);
-    $("#lossesTwo").text(playerTwoLosses);
+    if (snapshot.child("wins").exists() && snapshot.child("losses").exists()) {
+        playerTwoWins = snapshot.val().wins;
+        playerTwoLosses = snapshot.val().losses;
+        $("#winsTwo").text(playerTwoWins);
+        $("#lossesTwo").text(playerTwoLosses);
+    }
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
@@ -264,8 +317,63 @@ function resetGame() {
     throwPick.set({
         "throws": 0
     });
-    $("#choicesOne").show();
     $("#battleChoiceOne").text('');
-    $("#choicesTwo").show();
     $("#battleChoiceTwo").text('');
-}
+};
+
+// on click function for leaving the game and clearing the branches that need to be cleared and changing the html accordingly
+$("#leaveOne").on("click", function () {
+    player1.set({
+        "firstPlayer": ""
+    })
+    player1.remove();
+    $("#choicesOne").hide();
+    $("#namePickOne").show();
+    playerTwoWins = 0;
+    playerOneWins = 0;
+    playerOneLosses = 0;
+    playerTwoLosses = 0;
+    playerOneResults.set({
+        "wins": playerOneWins,
+        "losses": playerOneLosses
+    });
+    playerTwoResults.set({
+        "wins": playerTwoWins,
+        "losses": playerTwoLosses
+    });
+    player1choice.remove();
+    $("#battleChoiceOne").text("");
+    rpsChoice.remove();
+    throwPick.set({
+        "throws": 0
+    });
+    $("#leaveOne").hide();
+});
+
+$("#leaveTwo").on("click", function () {
+    player2.set({
+        "secondPlayer": ""
+    });
+    player2.remove();
+    $("#choicesTwo").hide();
+    $("#namePickTwo").show();
+    playerTwoWins = 0;
+    playerOneWins = 0;
+    playerOneLosses = 0;
+    playerTwoLosses = 0;
+    playerOneResults.set({
+        "wins": playerOneWins,
+        "losses": playerOneLosses
+    });
+    playerTwoResults.set({
+        "wins": playerTwoWins,
+        "losses": playerTwoLosses
+    });
+    player2choice.remove();
+    $("#battleChoiceTwo").text("")
+    rpsChoice.remove();
+    throwPick.set({
+        "throws": 0
+    });
+    $("#leaveTwo").hide();
+});
