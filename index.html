@@ -15,14 +15,14 @@
     <div class="container" div>
         <div class="row">
             <h1>Rock Paper Scissors!</h1>
-            <form id="namePick">
-                Choose a screen name:
-                <input type="text" id="screenName">
-                <input type="submit" id="nameSubmit" value="Submit">
-            </form>
         </div>
         <div class="row">
             <div class="col-md-4">
+                <form id="namePickOne">
+                    Choose a screen name:
+                    <input type="text" id="screenNameOne">
+                    <input type="submit" id="nameSubmitOne" value="Submit">
+                </form>
                 <h2 id="playerOne"></h2>
                 <div id="playerAreaOne">
                     <form id="choicesOne">
@@ -35,8 +35,10 @@
                     </form>
                     <h2 id="battleChoiceOne"></h2>
                 </div>
-                <p>wins:<p id="wins"></p></p>
-                <p>losses:<p id="losses"></p></p>
+                <p>wins:<p id="wins"></p>
+                </p>
+                <p>losses:<p id="losses"></p>
+                </p>
                 <!-- <button type="button" class="leaveButton" id="leaveOne">Leave Game</button> -->
             </div>
             <div class="col-md-4" id="resultsArea">
@@ -44,6 +46,11 @@
                 <div id="resultsImage"></div>
             </div>
             <div class="col-md-4">
+                <form id="namePickTwo">
+                    Choose a screen name:
+                    <input type="text" id="screenNameTwo">
+                    <input type="submit" id="nameSubmitTwo" value="Submit">
+                </form>
                 <h2 id="playerTwo"></h2>
                 <div id="playerAreaTwo">
                     <form id="choicesTwo">
@@ -56,8 +63,10 @@
                     </form>
                     <h2 id="battleChoiceTwo"></h2>
                 </div>
-                <p>wins:<p id="winsTwo"></p></p>
-                <p>losses:<p id="lossesTwo"></p></p>
+                <p>wins:<p id="winsTwo"></p>
+                </p>
+                <p>losses:<p id="lossesTwo"></p>
+                </p>
                 <!-- <button type="button" class="leaveButton" id="leaveTwo">Leave Game</button> -->
             </div>
         </div>
