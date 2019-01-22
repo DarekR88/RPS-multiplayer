@@ -44,6 +44,7 @@ $(document).ready(function () {
     $("#choicesTwo").hide();
     $("#leaveOne").hide();
     $("#leaveTwo").hide();
+    $("#messageArea").hide();
 });
 
 // username variable
@@ -60,6 +61,7 @@ $("#nameSubmitOne").on("click", function (event) {
     $("#namePickTwo").hide();
     $("#choicesOne").show();
     $("#leaveOne").show();
+    $("#messageArea").show();
     $("#screenNameOne").val('');
 });
 $("#nameSubmitTwo").on("click", function (event) {
@@ -72,6 +74,7 @@ $("#nameSubmitTwo").on("click", function (event) {
     $("#namePickOne").hide();
     $("#choicesTwo").show();
     $("#leaveTwo").show();
+    $("#messageArea").show();
     $("#screenNameTwo").val('');
 });
 
